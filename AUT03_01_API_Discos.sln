@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32901.215
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AUT03_01_API_Discos", "AUT03_01_API_Discos\AUT03_01_API_Discos.csproj", "{D32F2F14-6C19-4D86-AD77-F95B8432F249}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D32F2F14-6C19-4D86-AD77-F95B8432F249}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D32F2F14-6C19-4D86-AD77-F95B8432F249}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D32F2F14-6C19-4D86-AD77-F95B8432F249}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D32F2F14-6C19-4D86-AD77-F95B8432F249}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3B7462CC-5D96-4B9A-A011-443FD43E1DDA}
+	EndGlobalSection
+EndGlobal
