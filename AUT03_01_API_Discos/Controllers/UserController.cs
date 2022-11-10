@@ -24,15 +24,14 @@ namespace AUT03_01_API_Discos.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AppUser>>> ListUser()
         {
-            var users = await _userManager.Users.ToListAsync();
+            var users = await _context.Users.ToListAsync();
 
             foreach (var user in users)
             {
-                var roles = await _userManager.GetRolesAsync(user);
-                
+                user.roles = await _userManager.GetRolesAsync(user);
             }
 
-            return users;
+            return Ok(users);
         }
     }
 }

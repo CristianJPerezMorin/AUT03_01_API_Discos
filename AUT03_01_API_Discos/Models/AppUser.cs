@@ -11,6 +11,6 @@ namespace AUT03_01_API_Discos.Models
         public string? Apellidos { get; set; }
         [Required]
         public int? CodPostal { get; set; }
-        public List<IdentityRole> roles { get; set; }
+        public IList<string> roles { get; set; }
     }
 }

@@ -29,13 +29,16 @@ namespace AUT03_01_API_Discos.Controllers
         }
 
         [HttpPost("[Action]")]
-        public async Task<IActionResult> Login(string email, string password)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Login(string email, string contraseña)
         {
-            if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password))
+            if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(contraseña))
             {
                 var user = await _context.Users.FindAsync(email);
 
-                if (user != null && await _userManager.CheckPasswordAsync(user, password))
+                if (user != null && await _userManager.CheckPasswordAsync(user, contraseña))
                 {
                     var roles = await _userManager.GetRolesAsync(user);
                     //Añadir Claims
@@ -66,19 +69,22 @@ namespace AUT03_01_API_Discos.Controllers
                 }
                 else
                 {
-                    return NotFound();
+                    return NotFound("Error: No se ha encontrado el registro.");
                 }
             }
             else
             {
-                return BadRequest();
+                return BadRequest("Error: No se ha completado de forma correcta el registro.");
             }
         }
 
         [HttpPost("[Action]")]
-        public async Task<IActionResult> Register(string email, string password)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Register(string email, string contraseña, string nombre, string apellidos, int CodPostal)
         {
-            if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password))
+            if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(contraseña) && !string.IsNullOrEmpty(nombre) && !string.IsNullOrEmpty(apellidos) && CodPostal > 999)
             {
                 var users = await _context.Users.ToListAsync();
                 if (users != null)
@@ -89,16 +95,19 @@ namespace AUT03_01_API_Discos.Controllers
                     }
                     else
                     {
-                        var newUser = new IdentityUser
+                        var newUser = new AppUser
                         {
                             UserName = email,
                             Email = email,
                             NormalizedUserName = email.ToUpper(),
                             NormalizedEmail = email.ToUpper(),
+                            Nombre = nombre,
+                            Apellidos = apellidos,
+                            CodPostal = CodPostal,
                             EmailConfirmed = true
                         };
                         var passwordHasher = new PasswordHasher<IdentityUser>();
-                        newUser.PasswordHash = passwordHasher.HashPassword(newUser, password);
+                        newUser.PasswordHash = passwordHasher.HashPassword(newUser, contraseña);
                         var roles = await _context.Roles.ToListAsync();
                         IdentityUserRole<string> relacion = new IdentityUserRole<string>
                         {
@@ -109,13 +118,13 @@ namespace AUT03_01_API_Discos.Controllers
                         await _userManager.CreateAsync(newUser);
                         await _userManager.AddToRoleAsync(newUser, "Default");
 
-                        return Ok();
+                        return Ok("Registro realizado correctamente");
                     }
 
                 }
                 else
                 {
-                    return NotFound();
+                    return NotFound("Error: No se ha encontrado el registro.");
                 }
             }
             else

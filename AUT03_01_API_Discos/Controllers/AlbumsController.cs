@@ -23,33 +23,39 @@ namespace AUT03_01_API_Discos.Controllers
 
         // GET: api/Albums
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<Album>>> GetAlbums()
         {
-            return await _context.Albums.ToListAsync();
+            return Ok(await _context.Albums.Include(a=> a.Artist).Include(a => a.Tracks).Take(10).ToListAsync());
         }
 
         // GET: api/Albums/5
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Album>> GetAlbum(int id)
         {
-            var album = await _context.Albums.FindAsync(id);
-
+            var album = await _context.Albums.Include(a => a.Artist).Include(a => a.Tracks).FirstOrDefaultAsync(a => a.ArtistId == id);
+            
             if (album == null)
             {
-                return NotFound();
+                return NotFound("Error: No se ha encontrado el Album especificado.");
             }
 
-            return album;
+            return Ok(album);
         }
 
         // PUT: api/Albums/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> PutAlbum(int id, Album album)
         {
             if (id != album.AlbumId)
             {
-                return BadRequest();
+                return BadRequest("Error: El ID del Album introducido no existe en el contexto actual.");
             }
 
             _context.Entry(album).State = EntityState.Modified;
@@ -62,7 +68,7 @@ namespace AUT03_01_API_Discos.Controllers
             {
                 if (!AlbumExists(id))
                 {
-                    return NotFound();
+                    return NotFound("Error: No se ha encontrado el Album especificado.");
                 }
                 else
                 {
@@ -70,12 +76,13 @@ namespace AUT03_01_API_Discos.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/Albums
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Album>> PostAlbum(Album album)
         {
             _context.Albums.Add(album);
@@ -86,18 +93,20 @@ namespace AUT03_01_API_Discos.Controllers
 
         // DELETE: api/Albums/5
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteAlbum(int id)
         {
             var album = await _context.Albums.FindAsync(id);
             if (album == null)
             {
-                return NotFound();
+                return NotFound("Error: No se ha encontrado el Album especificado.");
             }
 
             _context.Albums.Remove(album);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
 
         private bool AlbumExists(int id)
