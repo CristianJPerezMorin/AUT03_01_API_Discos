@@ -28,7 +28,7 @@ namespace AUT03_01_API_Discos.Controllers
             _configuration = configuration;
         }
 
-        [HttpPost]
+        [HttpPost("[Action]")]
         public async Task<IActionResult> Login(string email, string password)
         {
             if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password))
@@ -75,7 +75,7 @@ namespace AUT03_01_API_Discos.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("[Action]")]
         public async Task<IActionResult> Register(string email, string password)
         {
             if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password))

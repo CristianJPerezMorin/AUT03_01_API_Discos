@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AUT03_01_API_Discos.Data;
+using AUT03_01_API_Discos.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AUT03_01_API_Discos.Controllers
 {
@@ -7,5 +11,28 @@ namespace AUT03_01_API_Discos.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private readonly AppUserContext _context;
+        public readonly UserManager<AppUser> _userManager;
+
+        public UserController(AppUserContext context, UserManager<AppUser> userManager)
+        {
+            _context = context;
+            _userManager = userManager;
+        }
+
+        // GET: api/Artists
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<AppUser>>> ListUser()
+        {
+            var users = await _userManager.Users.ToListAsync();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                
+            }
+
+            return users;
+        }
     }
 }
