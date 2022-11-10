@@ -6,10 +6,11 @@ namespace AUT03_01_API_Discos.Models
     public class AppUser : IdentityUser
     {
         [Required]
-        public string Nombre { get; set; }
+        public string? Nombre { get; set; }
         [Required]
-        public string Apellidos { get; set; }
+        public string? Apellidos { get; set; }
         [Required]
-        public string CodPostal { get; set; }
+        public int? CodPostal { get; set; }
+        public List<IdentityRole> roles { get; set; }
     }
 }

@@ -11,6 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ChinookContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ChinookContext") ?? throw new InvalidOperationException("Connection string 'ChinookContext' not found.")));
+builder.Services.AddDbContext<AppUserContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AppUserContext") ?? throw new InvalidOperationException("Connection string 'AppUserContext' not found.")));
 
 // Add services to the container.
 
