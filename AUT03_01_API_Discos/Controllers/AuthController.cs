@@ -84,7 +84,7 @@ namespace AUT03_01_API_Discos.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Register(AppUser user, string contraseña)
         {
-            if (!string.IsNullOrEmpty(user.Email) && !string.IsNullOrEmpty(contraseña) && !string.IsNullOrEmpty(user.Nombre) && !string.IsNullOrEmpty(user.Apellidos) && user.CodPostal > 999)
+            if (!string.IsNullOrEmpty(user.Email) && !string.IsNullOrEmpty(contraseña) && !string.IsNullOrEmpty(user.Nombre) && !string.IsNullOrEmpty(user.Apellidos) && user.CodPostal > 9999)
             {
                 var users = await _context.Users.ToListAsync();
                 if (users != null)
