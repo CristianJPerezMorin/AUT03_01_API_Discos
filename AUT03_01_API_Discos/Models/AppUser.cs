@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Build.Framework;
 using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel.DataAnnotations;
+using RequiredAttribute = Microsoft.Build.Framework.RequiredAttribute;
 
 namespace AUT03_01_API_Discos.Models
 {
@@ -41,6 +43,6 @@ namespace AUT03_01_API_Discos.Models
         [Required]
         public int? CodPostal { get; set; }
         [SwaggerSchema(ReadOnly = true)]
-        public IList<string> roles { get; set; }
+        public IList<string>? roles { get; set; }
     }
 }
