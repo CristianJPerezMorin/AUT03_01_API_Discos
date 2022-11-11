@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace AUT03_01_API_Discos.Models
 {
@@ -18,16 +19,19 @@ namespace AUT03_01_API_Discos.Models
         }
 
         [Key]
+        [SwaggerSchema(ReadOnly = true)]
         public int AlbumId { get; set; }
         [Required]
         [StringLength(160)]
         public string Title { get; set; }
+        [SwaggerSchema(ReadOnly = true)]
         public int ArtistId { get; set; }
 
         [ForeignKey("ArtistId")]
         [InverseProperty("Albums")]
         public virtual Artist Artist { get; set; }
         [InverseProperty("Album")]
+        [SwaggerSchema(ReadOnly = true)]
         public virtual ICollection<Track> Tracks { get; set; }
     }
 }

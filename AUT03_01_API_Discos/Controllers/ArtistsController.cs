@@ -7,10 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AUT03_01_API_Discos.Data;
 using AUT03_01_API_Discos.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AUT03_01_API_Discos.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
     public class ArtistsController : ControllerBase
     {
@@ -26,7 +28,7 @@ namespace AUT03_01_API_Discos.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<Artist>>> GetArtists()
         {
-            return Ok(await _context.Artists.Include(a => a.Albums).Take(10).ToListAsync());
+            return Ok(await _context.Artists.Include(a => a.Albums).OrderByDescending(a => a.Name).Take(10).ToListAsync());
         }
 
         // GET: api/Artists/5
@@ -35,7 +37,7 @@ namespace AUT03_01_API_Discos.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Artist>> GetArtist(int id)
         {
-            var artist = await _context.Artists.FirstOrDefaultAsync(a => a.ArtistId == id);
+            var artist = await _context.Artists.Include(a => a.Albums).FirstOrDefaultAsync(a => a.ArtistId == id);
 
             if (artist == null)
             {
@@ -48,50 +50,64 @@ namespace AUT03_01_API_Discos.Controllers
         // PUT: api/Artists/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [Authorize(Roles = "Admin,Manager")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> PutArtist(int id, Artist artist)
         {
-            if (id != artist.ArtistId)
+            if (!ArtistExists(id))
             {
-                return BadRequest("Error: El ID del Artista introducido no existe en el contexto actual.");
+                return NotFound("Error: El Artista no se encuentra en la base de datos");
             }
-
-            _context.Entry(artist).State = EntityState.Modified;
-
-            try
+            if (!ModelState.IsValid)
             {
-                await _context.SaveChangesAsync();
+                return BadRequest("Error: Los campos de album no cumplen las restricciones.");
             }
-            catch (DbUpdateConcurrencyException)
+            else
             {
-                if (!ArtistExists(id))
+
+                try
                 {
-                    return NotFound("Error: No se ha encontrado el Artista especificado.");
+                    artist.ArtistId = id;
+                    _context.Update(artist);
+                    await _context.SaveChangesAsync();
+                    return NoContent();
                 }
-                else
+                catch (DbUpdateConcurrencyException)
                 {
-                    throw;
+                    if (!ArtistExists(id))
+                    {
+                        return NotFound("Error: No se ha encontrado el Album especificado.");
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
             }
-
-            return Ok();
         }
 
         // POST: api/Artists
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Artist>> PostArtist(Artist artist)
+        [Authorize(Roles = "Admin,Manager")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> PostArtist(Artist artist)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Error: Unos de los campos no cumple las retricciones.");
+            }
             _context.Artists.Add(artist);
             await _context.SaveChangesAsync();
-
             return CreatedAtAction("GetArtist", new { id = artist.ArtistId }, artist);
         }
 
         // DELETE: api/Artists/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Manager")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteArtist(int id)

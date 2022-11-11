@@ -1,5 +1,6 @@
 ﻿using AUT03_01_API_Discos.Data;
 using AUT03_01_API_Discos.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AUT03_01_API_Discos.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     [ApiController]
     public class UserController : ControllerBase
     {

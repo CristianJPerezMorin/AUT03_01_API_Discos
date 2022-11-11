@@ -19,9 +19,9 @@ namespace AUT03_01_API_Discos.Controllers
     {
         public readonly AppUserContext _context;
         private readonly IConfiguration _configuration;
-        public readonly UserManager<IdentityUser> _userManager;
+        public readonly UserManager<AppUser> _userManager;
 
-        public AuthController(AppUserContext context, UserManager<IdentityUser> userManager, IConfiguration configuration)
+        public AuthController(AppUserContext context, UserManager<AppUser> userManager, IConfiguration configuration)
         {
             _context = context;
             _userManager = userManager;
@@ -36,7 +36,7 @@ namespace AUT03_01_API_Discos.Controllers
         {
             if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(contraseña))
             {
-                var user = await _context.Users.FindAsync(email);
+                var user = await _userManager.FindByEmailAsync(email);
 
                 if (user != null && await _userManager.CheckPasswordAsync(user, contraseña))
                 {
@@ -82,14 +82,15 @@ namespace AUT03_01_API_Discos.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Register(string email, string contraseña, string nombre, string apellidos, int CodPostal)
+        public async Task<IActionResult> Register(AppUser user, string contraseña)
         {
-            if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(contraseña) && !string.IsNullOrEmpty(nombre) && !string.IsNullOrEmpty(apellidos) && CodPostal > 999)
+            if (!string.IsNullOrEmpty(user.Email) && !string.IsNullOrEmpty(contraseña) && !string.IsNullOrEmpty(user.Nombre) && !string.IsNullOrEmpty(user.Apellidos) && user.CodPostal > 999)
             {
                 var users = await _context.Users.ToListAsync();
                 if (users != null)
                 {
-                    if (users.Find(x => x.Email == email) != null)
+                    var findUser = users.Find(x => x.Email == user.Email);
+                    if (findUser != null)
                     {
                         return BadRequest("Error: El usuario ya existe.");
                     }
@@ -97,16 +98,16 @@ namespace AUT03_01_API_Discos.Controllers
                     {
                         var newUser = new AppUser
                         {
-                            UserName = email,
-                            Email = email,
-                            NormalizedUserName = email.ToUpper(),
-                            NormalizedEmail = email.ToUpper(),
-                            Nombre = nombre,
-                            Apellidos = apellidos,
-                            CodPostal = CodPostal,
+                            UserName = user.Email,
+                            Email = user.Email,
+                            NormalizedUserName = user.Email.ToUpper(),
+                            NormalizedEmail = user.Email.ToUpper(),
+                            Nombre = user.Nombre,
+                            Apellidos = user.Apellidos,
+                            CodPostal = user.CodPostal,
                             EmailConfirmed = true
                         };
-                        var passwordHasher = new PasswordHasher<IdentityUser>();
+                        var passwordHasher = new PasswordHasher<AppUser>();
                         newUser.PasswordHash = passwordHasher.HashPassword(newUser, contraseña);
                         var roles = await _context.Roles.ToListAsync();
                         IdentityUserRole<string> relacion = new IdentityUserRole<string>
